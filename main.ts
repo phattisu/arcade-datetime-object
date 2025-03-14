@@ -741,11 +741,11 @@ namespace DateTime {
             if (grow > 0) {
                 const cnum = calennum[Math.max(0,i-7)]
                 outputimg.drawRect(gcol*twidth,grow*theight,twidth+1,theight+1,fgcol)
-                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
+                outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
                 if (cnum > 0) {
                     if (myDate.mydatetime.day == cnum) {
                         outputimg.fillRect(gcol * twidth, grow * theight, twidth + 1, theight + 1, fgcol)
-                        outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+                        outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
                     }
                 }
             } else {
