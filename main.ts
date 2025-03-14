@@ -97,12 +97,24 @@ namespace DateTime {
     }
 
     export enum DropDatetime {
+        //% block="month"
         Month = 0,
-        Day = 1,
+        //% block="day of month"
+        DayOfMonth = 1,
+        //% block="year"
         Year = 2,
+        //% block="hour"
         Hour = 3,
+        //% block="minute"
         Minute = 4,
-        Second = 5
+        //% block="second"
+        Second = 5,
+        //% block="day of year"
+        DayOfYear = 6,
+        //% block="day of week"
+        DayOfWeek = 7,
+        //% block="day since"
+        DaySince = 8
     }
 
     export enum OffsetWeek {
@@ -195,6 +207,8 @@ namespace DateTime {
         minute: Minute   // 0-59 
         second: Second   // 0-59
         dayOfYear: DayOfYear  // 1-366
+        dayOfWeek: Weekday // 0-6 / weekday value
+        daySince: SecondsCount // Day of since
     }
 
     interface Date {
@@ -202,6 +216,8 @@ namespace DateTime {
         day: Day   // 1-31 / Day of month
         year: Year  // Assumed to be 2020 or later
         dayOfYear: DayOfYear  // 1-366
+        dayOfWeek: Weekday // 0-6 / weekday value
+        daySince: SecondsCount // Day of since
     }
 
     interface MonthDay {
@@ -314,7 +330,10 @@ namespace DateTime {
         // Convert days to dd/ mm
         const ddmm = dayOfYearToMonthAndDay(daysFromStartOfYear, y) // current year, y, not start year
 
-        return { month: ddmm.month, day: ddmm.day, year: y, dayOfYear: daysFromStartOfYear }
+        const weekv = dateToDayOfWeek(datevalue(ddmm.month, ddmm.day, y))
+        const daysincev = dateToDaySince(datevalue(ddmm.month, ddmm.day, y))
+
+        return { month: ddmm.month, day: ddmm.day, year: y, dayOfYear: daysFromStartOfYear , dayOfWeek: weekv, daySince: daysincev}
     }
 
     function timeFor(mydt: dtobj, cpuTime: SecondsCount): DateTime {
@@ -350,8 +369,11 @@ namespace DateTime {
         // Convert days to dd/ mm
         const ddmm = dayOfYearToMonthAndDay(daysFromStartOfYear, y) // current year, y, not start year
 
-        mydt.mydatetime = { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear }
-        return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear }
+        const weekv = dateToDayOfWeek(datevalue(ddmm.month, ddmm.day, y))
+        const daysincev = dateToDaySince(datevalue(ddmm.month, ddmm.day, y))
+
+        mydt.mydatetime = { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear, dayOfWeek: weekv, daySince: daysincev }
+        return mydt.mydatetime
     }
 
     function timeSinceFor(timeSince: SecondsCount, offsetSince: SecondsCount = 0, offsetYear: Year = 0): DateTime {
@@ -388,7 +410,10 @@ namespace DateTime {
         // Convert days to dd/ mm
         const ddmm = dayOfYearToMonthAndDay(daysFromStartOfYear, y) // current year, y, not start year
 
-        return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear }
+        const weekv = dateToDayOfWeek(datevalue(ddmm.month, ddmm.day, y))
+        const daysincev = dateToDaySince(datevalue(ddmm.month, ddmm.day, y))
+
+        return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear, dayOfWeek: weekv, daySince: daysincev }
     }
 
     //% shim=datetime::cpuTimeInSeconds
@@ -442,30 +467,9 @@ namespace DateTime {
     export function getDataFromDtObj(mydt: dtobj, dt: DropDatetime) {
         const udatetime = mydt.mydatetime
         switch (dt) {
-            case 0:
-                return udatetime.month
-                break
-
-            case 1:
-                return udatetime.day
-                break
-
-            case 2:
-                return udatetime.year
-                break
-
-            case 3:
-                return udatetime.hour
-                break
-
-            case 4:
-                return udatetime.minute
-                break
-
-            case 5:
-                return udatetime.second
-                break
-
+            case 0: return udatetime.month; break; case 1: return udatetime.day; break; case 2: return udatetime.year; break;
+            case 3: return udatetime.hour; break; case 4: return udatetime.minute; break; case 5: return udatetime.second; break;
+            case 6: return udatetime.dayOfYear; case 7: return udatetime.dayOfWeek; break; case 8: return udatetime.daySince; break;
         }
         return -1
     }
