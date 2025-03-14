@@ -679,17 +679,19 @@ namespace DateTime {
     /**
      * create calendar table from date
      * @param idate the date to create raw calendar
+     * @param startweek the offset week for calendar
      */
     //% blockid=datetime_datetable
-    //% block="calendar table as $idate"
+    //% block="raw calendar table as $idate in $startweek"
     //% idate.shadow=datetime_dateshadow
     //% weight=15
-    export function dateAsTableList(idate: dates): number[] {
+    export function dateAsTableList(idate: dates, startweek: OffsetWeek): number[] {
         let dateJ = new dates(idate.month, idate.day, idate.year)
         let dateCountI = dateToDaySince(datevalue(dateJ.month, dateJ.day, dateJ.year))
         let dateI = dateSinceFor(dateCountI)
         let dateWeek = dateToDayOfWeek(datevalue(dateI.month, dateI.day, dateI.year))
-        while (dateI.month == dateJ.month || dateWeek != 0) {
+        while (dateI.month == dateJ.month || dateWeek != startweek) {
+            if (dateSinceFor(dateCountI - 1).month != dateJ.month && dateWeek == startweek) break;
             dateCountI--
             dateI = dateSinceFor(dateCountI)
             dateWeek = dateToDayOfWeek(datevalue(dateI.month, dateI.day, dateI.year))
@@ -698,9 +700,46 @@ namespace DateTime {
         let tableCol = 7, tableRow = 6
         for (let iin = 0; iin < tableCol * tableRow; iin++) {
             dateI = dateSinceFor(dateCountI + iin)
-            tableDate.push((dateJ.month == dateI.month || (dateI.dayOfYear == 1)) ? dateI.dayOfYear - cdoy[dateI.month] + ((dateI.month > 2 && isLeapYear(dateI.year)) ? 1 : 0) : -1)
+            tableDate.push((dateJ.month == dateI.month || (dateI.dayOfYear == 1)) ? dateI.day : -dateI.day)
         }
         return tableDate
+    }
+
+    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
+        let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
+        let calenstr: string[] = []
+        for (let i = 0;i < 6;i++) {
+            calenstr.push(weekName[(i+startweek)%6][1].substr(0,2))
+        }
+        for (let val of calennum) {
+            if (val < 0) {
+                val = Math.abs(val)
+            }
+            calenstr.push(val.toString())
+        }
+        let twidth = 12, theight = 10
+        let gtcol = calenstr.length % 7, gtrow = Math.floor(calenstr.length / 7)
+        let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
+        outputimg.fill(bgcol)
+        outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
+        outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
+        for (let i = 0;i < calenstr.length;i++) {
+            const gcol = i % 6, grow = Math.floor(i / 6), txt = calenstr[i]
+            if (grow > 0) {
+                const cnum = calennum[Math.max(0,i-7)]
+                outputimg.drawRect(gcol*twidth,grow*theight,twidth+1,theight+1,fgcol)
+                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (gcol * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
+                if (cnum > 0) {
+                    if (myDate.mydatetime.day == cnum) {
+                        outputimg.fillRect(gcol * twidth, grow * theight, twidth + 1, theight + 1, fgcol)
+                        outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (gcol * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+                    }
+                }
+            } else {
+                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (gcol * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+            }
+        }
+        return outputimg
     }
 
     /**
