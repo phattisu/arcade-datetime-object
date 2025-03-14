@@ -722,7 +722,7 @@ namespace DateTime {
         let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
         let calenstr: string[] = []
         for (let i = 0;i < 7;i++) {
-            calenstr.push(weekName[1][(i+startweek)%7].substr(0,2))
+            calenstr.push(weekName[1][(i+startweek)%7].substr(0,2).toUpperCase())
         }
         for (let val of calennum) {
             if (val < 0) {
@@ -730,7 +730,7 @@ namespace DateTime {
             }
             calenstr.push(val.toString())
         }
-        let twidth = 14, theight = 10
+        let twidth = 15, theight = 10
         let gtcol = 7, gtrow = 7
         let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
         outputimg.fill(bgcol)
