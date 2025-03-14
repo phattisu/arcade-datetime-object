@@ -731,7 +731,7 @@ namespace DateTime {
             calenstr.push(val.toString())
         }
         let twidth = 12, theight = 10
-        let gtcol = calenstr.length % 7, gtrow = Math.floor(calenstr.length / 7)
+        let gtcol = 7, gtrow = 7
         let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
         outputimg.fill(bgcol)
         outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
@@ -741,15 +741,15 @@ namespace DateTime {
             if (grow > 0) {
                 const cnum = calennum[Math.max(0,i-7)]
                 outputimg.drawRect(gcol*twidth,grow*theight,twidth+1,theight+1,fgcol)
-                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (gcol * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
+                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
                 if (cnum > 0) {
                     if (myDate.mydatetime.day == cnum) {
                         outputimg.fillRect(gcol * twidth, grow * theight, twidth + 1, theight + 1, fgcol)
-                        outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (gcol * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+                        outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
                     }
                 }
             } else {
-                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (gcol * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
             }
         }
         return outputimg
