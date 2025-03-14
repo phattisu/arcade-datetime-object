@@ -19,7 +19,7 @@ namespace DateTime {
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2022
-    export function datevalue(month: number, day: number, year: number) { return new dates(Math.constrain(month,1,31), Math.constrain(day,1,31), year) }
+    export function datevalue(month: number, day: number, year: number) { return new dates(((month-1)%12)+1, ((day-1)%31)+1, year) }
 
     export class times { constructor(public hour: number, public minute: number, public second: number) { } }
 
@@ -514,8 +514,8 @@ namespace DateTime {
     //% weight=80
     export function setDate(mydt: dtobj, dates: dates) {
         let year = dates.year, month = dates.month, day = dates.day
-        month = month % 13
-        day = day % 32
+        month = ((month-1)%12)+1
+        day = ((day-1)%31)+1
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(mydt, cpuTime)
         mydt.startYear = year
@@ -936,3 +936,4 @@ namespace DateTime {
 
     // ********************************************************
 }
+
