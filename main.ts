@@ -722,7 +722,7 @@ namespace DateTime {
         let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
         let calenstr: string[] = []
         for (let i = 0;i < 7;i++) {
-            calenstr.push(weekName[1][(i+startweek)%6].substr(0,2))
+            calenstr.push(weekName[1][(i+startweek)%7].substr(0,2))
         }
         for (let val of calennum) {
             if (val < 0) {
