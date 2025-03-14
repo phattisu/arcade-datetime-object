@@ -293,8 +293,7 @@ namespace DateTime {
         for (let i = 1; i < cdoy.length; i++) {  // Start at 1 for 1- based index
             // If the day lands in (not through) this month, return it
             if (d <= cdoy[i + 1]) {
-                const dayleap = (i > 2 && isLeapYear(y)) ? 1 : 0
-                return { month: i, day: (d - cdoy[i]) - dayleap }
+                return { month: i, day: d - cdoy[i] }
             }
         }
         // This should never happen!
