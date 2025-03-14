@@ -713,7 +713,7 @@ namespace DateTime {
      * @param the background color
      */
     //% blockid=datetime_datetable
-    //% block="calendar as image $idate in $startweek|| fgcolor $fgcol bgcolor $bgcol"
+    //% block="calendar as image $myDate in $startweek|| fgcolor $fgcol bgcolor $bgcol"
     //% myDate.shadow=variables_get myDate.defl=myDateTime
     //% fgcol.shadow=colorindexpicker
     //% bgcol.shadow=colorindexpicker
