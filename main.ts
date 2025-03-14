@@ -40,7 +40,7 @@ namespace DateTime {
     export function time12value(hour: number, min: number, sec: number) { return new times(((hour - 1) % 12) + 1, min % 60, sec % 60) }
 
     export class dtobj {
-        public mydatetime: DateTime;
+        public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 0, dayOfWeek: 0, daySince: 0}
         public startYear: Year; public cpuTimeAtSetpoint: SecondsCount; public timeToSetpoint: SecondsCount;
         public lastUpdateMinute: Minute = -255; public lastUpdateHour: Hour = -255; public lastUpdateDay: Day = -255  // Set to invalid values for first update
         public TIME_AND_DATE_EVENT = 94; public TIME_AND_DATE_NEWMINUTE = 1; public TIME_AND_DATE_NEWHOUR = 2; public TIME_AND_DATE_NEWDAY = 3
@@ -73,6 +73,7 @@ namespace DateTime {
 
         constructor() {
             this.startYear = 1; this.cpuTimeAtSetpoint = 0; this.timeToSetpoint = 0
+            this.mydatetime = timeFor(this, cpuTimeInSeconds())
             this.run()
         }
     }
@@ -467,9 +468,15 @@ namespace DateTime {
     export function getDataFromDtObj(mydt: dtobj, dt: DropDatetime) {
         const udatetime = mydt.mydatetime
         switch (dt) {
-            case 0: return udatetime.month; break; case 1: return udatetime.day; break; case 2: return udatetime.year; break;
-            case 3: return udatetime.hour; break; case 4: return udatetime.minute; break; case 5: return udatetime.second; break;
-            case 6: return udatetime.dayOfYear; case 7: return udatetime.dayOfWeek; break; case 8: return udatetime.daySince; break;
+            case 0: return udatetime.month; break;
+            case 1: return udatetime.day; break;
+            case 2: return udatetime.year; break;
+            case 3: return udatetime.hour; break;
+            case 4: return udatetime.minute; break;
+            case 5: return udatetime.second; break;
+            case 6: return udatetime.dayOfYear; break;
+            case 7: return udatetime.dayOfWeek; break;
+            case 8: return udatetime.daySince; break;
         }
         return -1
     }
