@@ -19,7 +19,7 @@ namespace DateTime {
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2022
-    export function datevalue(month: number, day: number, year: number) { return new dates(((month - 1) % 12) + 1, ((day - 1) % 31) + 1, year) }
+    export function datevalue(month: number, day: number, year: number) { return new dates(Math.constrain(month,1,31), Math.constrain(day,1,31), year) }
 
     export class times { constructor(public hour: number, public minute: number, public second: number) { } }
 
@@ -72,7 +72,7 @@ namespace DateTime {
         }
 
         constructor() {
-            this.startYear = 1; this.cpuTimeAtSetpoint = 0; this.timeToSetpoint = 0
+            this.startYear = 0; this.cpuTimeAtSetpoint = 0; this.timeToSetpoint = 0
             this.mydatetime = timeFor(this, cpuTimeInSeconds())
             this.run()
         }
@@ -293,8 +293,8 @@ namespace DateTime {
         for (let i = 1; i < cdoy.length; i++) {  // Start at 1 for 1- based index
             // If the day lands in (not through) this month, return it
             if (d <= cdoy[i + 1]) {
-                return { month: i, day: d - cdoy[i] }
-
+                const dayleap = (i > 2 && isLeapYear(y)) ? 1 : 0
+                return { month: i, day: (d - cdoy[i]) - dayleap }
             }
         }
         // This should never happen!
@@ -355,7 +355,7 @@ namespace DateTime {
 
         // sSinceStartOfYear and leap are now for "y", not "year".  Don't use "year"! Use "y"
         // Find elapsed days
-        const daysFromStartOfYear = Math.idiv(sSinceStartOfYear, (24 * 60 * 60)) + 1  // +1 offset for 1/1 being day 1
+        const daysFromStartOfYear = Math.constrain(Math.idiv(sSinceStartOfYear, (24 * 60 * 60)), 1, (isLeapYear(y)) ? 366 : 365)  // +1 offset for 1/1 being day 1 and maximum for 366 if is LeapYear or 365 if not LeapYear
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
