@@ -877,7 +877,7 @@ namespace DateTime {
     /**
      * Seconds since start of arcade 
      */
-    //% blockid=datetime_secsincestart
+    //% blockid=datetime_secondsincereset
     //% block="seconds since arcade start" advanced=true
     //% weight=40
     export function secondsSinceReset(): number {
@@ -889,7 +889,7 @@ namespace DateTime {
      * Called when minutes change
      */
     //% blockid=datetime_minuteupdate
-    //% block="minute changed in $mydt" advanced=true
+    //% block="minute changed from $mydt" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% weight=85
     export function onMinuteChanged(mydt: dtobj, handler: () => void) {
@@ -900,7 +900,7 @@ namespace DateTime {
      * Called when hours change
      */
     //% blockid=datetime_hourupdate
-    //% block="hour changed in $mydt" advanced=true
+    //% block="hour changed from $mydt" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% weight=80
     export function onHourChanged(mydt: dtobj, handler: () => void) {
@@ -911,7 +911,7 @@ namespace DateTime {
      * Called when days change
      */
     //% blockid=datetime_dayupdate
-    //% block="day changed in $mydt" advanced=true
+    //% block="day changed from $mydt" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% weight=75
     export function onDayChanged(mydt: dtobj, handler: () => void) {
