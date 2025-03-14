@@ -730,14 +730,14 @@ namespace DateTime {
             }
             calenstr.push(val.toString())
         }
-        let twidth = 12, theight = 10
+        let twidth = 14, theight = 10
         let gtcol = 7, gtrow = 7
         let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
         outputimg.fill(bgcol)
         outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
         outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
         for (let i = 0;i < calenstr.length;i++) {
-            const gcol = i % 6, grow = Math.floor(i / 6), txt = calenstr[i]
+            const gcol = i % 7, grow = Math.floor(i / 7), txt = calenstr[i]
             if (grow > 0) {
                 const cnum = calennum[Math.max(0,i-7)]
                 outputimg.drawRect(gcol*twidth,grow*theight,twidth+1,theight+1,fgcol)
