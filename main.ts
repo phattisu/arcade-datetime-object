@@ -721,7 +721,7 @@ namespace DateTime {
     export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
         let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
         let calenstr: string[] = []
-        for (let i = 0;i < 6;i++) {
+        for (let i = 0;i < 7;i++) {
             calenstr.push(weekName[1][(i+startweek)%6].substr(0,2))
         }
         for (let val of calennum) {
