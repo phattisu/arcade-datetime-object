@@ -705,6 +705,19 @@ namespace DateTime {
         return tableDate
     }
 
+    /**
+     * create calendar table from date
+     * @param myDate the current date
+     * @param startweek the offset week for calendar
+     * @param the forground color
+     * @param the background color
+     */
+    //% blockid=datetime_datetable
+    //% block="calendar as image $idate in $startweek|| fgcolor $fgcol bgcolor $bgcol"
+    //% myDate.shadow=variables_get myDate.defl=myDateTime
+    //% fgcol.shadow=colorindexpicker
+    //% bgcol.shadow=colorindexpicker
+    //% weight=15
     export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
         let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
         let calenstr: string[] = []
