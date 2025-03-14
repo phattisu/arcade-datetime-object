@@ -40,7 +40,7 @@ namespace DateTime {
     export function time12value(hour: number, min: number, sec: number) { return new times(((hour - 1) % 12) + 1, min % 60, sec % 60) }
 
     export class dtobj {
-        public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 0, dayOfWeek: 0, daySince: 0}
+        public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
         public startYear: Year; public cpuTimeAtSetpoint: SecondsCount; public timeToSetpoint: SecondsCount;
         public lastUpdateMinute: Minute = -255; public lastUpdateHour: Hour = -255; public lastUpdateDay: Day = -255  // Set to invalid values for first update
         public TIME_AND_DATE_EVENT = 94; public TIME_AND_DATE_NEWMINUTE = 1; public TIME_AND_DATE_NEWHOUR = 2; public TIME_AND_DATE_NEWDAY = 3
@@ -73,7 +73,6 @@ namespace DateTime {
 
         constructor() {
             this.startYear = 0; this.cpuTimeAtSetpoint = 0; this.timeToSetpoint = 0
-            this.mydatetime = timeFor(this, cpuTimeInSeconds())
             this.run()
         }
     }
