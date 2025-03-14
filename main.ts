@@ -749,7 +749,7 @@ namespace DateTime {
                     }
                 }
             } else {
-                outputimg.print(txt, (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+                outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
             }
         }
         return outputimg
