@@ -7,7 +7,7 @@
  *
  * @cradit Bill Siever
  */
-//% block="Time and Date"
+//% block="Date and Time"
 //% color="#AA278D"  icon="\uf017"
 namespace DateTime {
 
@@ -53,6 +53,7 @@ namespace DateTime {
                 // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by every 1s with about 65kHz for arcade or etc.
                 const cpuTime = cpuTimeInSeconds()
                 const t = timeFor(this, cpuTime)
+                this.mydatetime = t
             })
         }
 
@@ -435,6 +436,7 @@ namespace DateTime {
     //% block="create new datetime"
     //% inlineInputMode=inline
     //% blockSetVariable="myDateTime"
+    //% group="create datetime"
     //% weight=140
     export function newDatetime() { return new dtobj() }
 
@@ -447,6 +449,7 @@ namespace DateTime {
     //% block=" $mydt get datetime value as $dt"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% inlineInputMode=inline
+    //% group="number of datetime"
     //% weight=133
     export function getDataFromDtObj(mydt: dtobj, dt: DropDatetime) {
         const udatetime = mydt.mydatetime
@@ -473,6 +476,7 @@ namespace DateTime {
     //% block=" $mydt set time from 24-hour time $times"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% times.shadow=datetime_timeshadow
+    //% group="time setting"
     //% weight=90
     export function set24HourTime(mydt: dtobj, times: times) {
         let hour = times.hour, minute = times.minute, second = times.second
@@ -494,6 +498,7 @@ namespace DateTime {
     //% block=" $mydt set date to $dates"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% dates.shadow=datetime_dateshadow
+    //% group="date setting"
     //% weight=80
     export function setDate(mydt: dtobj, dates: dates) {
         let year = dates.year, month = dates.month, day = dates.day
@@ -503,7 +508,7 @@ namespace DateTime {
         const t = timeFor(mydt, cpuTime)
         mydt.startYear = year
         mydt.cpuTimeAtSetpoint = cpuTime
-        mydt.timeToSetpoint = secondsSoFarForYear(month, day, startYear, t.hour, t.minute, t.second)
+        mydt.timeToSetpoint = secondsSoFarForYear(month, day, mydt.startYear, t.hour, t.minute, t.second)
     }
 
     /**
@@ -517,6 +522,7 @@ namespace DateTime {
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% times.shadow=datetime_halftimeshadow
     //% inlineInputMode=inline
+    //% group="time setting"
     //% weight=100
     export function set12HourTime(mydt: dtobj, times: times, ampm: MornNight) {
         let hour = times.hour, minute = times.minute, second = times.second
@@ -539,23 +545,25 @@ namespace DateTime {
     //% blockid=datetime_advancesetdatetime
     //% block=" $mydt advance time/date by $amount $unit" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="advance setting"
     //% weight=50
     export function advanceBy(mydt: dtobj, amount: number, unit: TimeUnit) {
         const units = [0, 1, 60 * 1, 60 * 60 * 1, 24 * 60 * 60 * 1]
         // Don't let time go negative:
-        if (amount < 0 && (-amount * units[unit]) > timeToSetpoint)
+        if (amount < 0 && (-amount * units[unit]) > mydt.timeToSetpoint)
             mydt.timeToSetpoint = 0
         else
             mydt.timeToSetpoint += amount * units[unit]
     }
 
     /**
-     * get day since from date
+     * Get day since from date
      * @param date of month day year
      */
     //% blockid=datetime_datetodaysince
-    //% block="day since as $dates"
+    //% block="day since as $dates" advanced=true
     //% dates.shadow=datetime_dateshadow
+    //% group="calculate"
     //% weight=20
     export function dateToDaySince(dates: dates): SecondsCount {
         let uyear = dates.year, umonth = dates.month, uday = dates.day
@@ -567,14 +575,15 @@ namespace DateTime {
     }
 
     /**
-     * get time since from date and time
+     * Get time since from date and time
      * @param date of month day year
      * @param time of hour minute second
      */
     //% blockid=datetime_datetodaysince
-    //% block="time since as $dates and $times"
+    //% block="time since as $dates and $times" advanced=true
     //% dates.shadow=datetime_dateshadow
     //% times.shadow=datetime_timeshadow
+    //% group="calculate"
     //% weight=20
     export function dateAndTimeToTimeSince(dates: dates, times: times): SecondsCount {
         let uyear = dates.year, umonth = dates.month, uday = dates.day
@@ -594,6 +603,7 @@ namespace DateTime {
     //% blockid=datetime_date2dayweek
     //% block="day of week for $dates" advanced=true
     //% dates.shadow=datetime_dateshadow
+    //% group="calculate"
     //% weight=40
     export function dateToDayOfWeek(dates: dates): Weekday {
         let month = dates.month, day = dates.day, year = dates.year
@@ -612,6 +622,7 @@ namespace DateTime {
     //% blockid=datetime_date2dayyear
     //% block="day of year for $dates" advanced=true
     //% dates.shadow=datetime_dateshadow
+    //% group="calculate"
     //% weight=30
     export function dateToDayOfYear(dates: dates): DayOfYear {
         let year = dates.year, month = dates.month, day = dates.day
@@ -631,9 +642,10 @@ namespace DateTime {
      * @param odate the currentdate value
      */
     //% blockId=datetime_mydatetoage
-    //% block=" $mydt get age from birthdate by $idate in current date"
+    //% block=" $mydt get age from birthdate by $idate in current date" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% idate.shadow=datetime_dateshadow
+    //% group="calculate"
     //% weight=14
     export function myDateToAge(mydt: dtobj, idate: dates) {
         let dateii = new dates(idate.month, idate.day, idate.year), DsinceMin = dateToDaySince(datevalue(dateii.month, dateii.day, dateii.year)), DateMin = dateSinceFor(DsinceMin), LeapMin = isLeapYear(DateMin.year)
@@ -667,8 +679,9 @@ namespace DateTime {
      * @param startweek the offset week for calendar
      */
     //% blockid=datetime_datetable
-    //% block="raw calendar table as $idate in $startweek"
+    //% block="raw calendar table as $idate in $startweek" advanced=true
     //% idate.shadow=datetime_dateshadow
+    //% group="calculate"
     //% weight=15
     export function dateAsTableList(idate: dates, startweek: OffsetWeek): number[] {
         let dateJ = new dates(idate.month, idate.day, idate.year)
@@ -702,6 +715,7 @@ namespace DateTime {
     //% myDate.shadow=variables_get myDate.defl=myDateTime
     //% fgcol.shadow=colorindexpicker
     //% bgcol.shadow=colorindexpicker
+    //% group="image output"
     //% weight=15
     export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
         let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
@@ -749,6 +763,7 @@ namespace DateTime {
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% handlerStatement
     //% draggableParameters="reporter"
+    //% group="param in state"
     //% weight=100
     export function numericTime(mydt: dtobj, handler: (hour: Hour, minute: Minute, second: Second, month: Month, day: Day, year: Year) => void) {
         const cpuTime = cpuTimeInSeconds()
@@ -764,6 +779,7 @@ namespace DateTime {
     //% blockid=datetime_time2format
     //% block=" $mydt time as $format"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="text output"
     //% weight=70
     export function time(mydt: dtobj, format: TimeFormat): string {
         const cpuTime = cpuTimeInSeconds()
@@ -814,6 +830,7 @@ namespace DateTime {
     //% blockid=datetime_datemonth2format 
     //% block=" $mydt month name as $format"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="text output"
     //% weight=20
     export function nameMonth(mydt: dtobj, format: MonthNameFormat): string {
         const cpuTime = cpuTimeInSeconds()
@@ -839,6 +856,7 @@ namespace DateTime {
     //% blockid=datetime_dateweek2format
     //% block=" $mydt week name as $format"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="text output"
     //% weight=20
     export function nameWeek(mydt: dtobj, format: WeekNameFormat): string {
         const cpuTime = cpuTimeInSeconds()
@@ -869,6 +887,7 @@ namespace DateTime {
     //% blockid=datetime_date2format
     //% block=" $mydt date as $format for year as $ytype"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="text output"
     //% weight=60
     export function date(mydt: dtobj, format: DateFormat, ytype: YearFormat = 0): string {
         const cpuTime = cpuTimeInSeconds()
@@ -904,6 +923,7 @@ namespace DateTime {
     //% blockid=datetime_dateandtime 
     //% block=" $mydt date and time stamp for year in $ytype"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="text output"
     //% weight=50
     export function dateTime(mydt: dtobj, ytype: YearFormat = 0): string {
         const cpuTime = cpuTimeInSeconds()
@@ -916,6 +936,7 @@ namespace DateTime {
      */
     //% blockid=datetime_secondsincereset
     //% block="seconds since arcade start" advanced=true
+    //% group="runtime"
     //% weight=40
     export function secondsSinceReset(): number {
         return cpuTimeInSeconds()
@@ -929,13 +950,14 @@ namespace DateTime {
     //% block="on minute changed from $mydt do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% handlerStatement
+    //% group="state update"
     //% weight=85
-    export function onMinuteChanged(mydt: dtobj, thendo: () => void) {
-        const tt = timeFor(mydt, cpuTimeInSeconds())
-        if (mydt.lastUpdateMinute == tt.minute) return;
+    export function onMinuteChanged(mydt: dtobj, then: () => void) {
+        if (mydt.lastUpdateMinute == mydt.mydatetime.minute) return;
+        
         // New minute
-        mydt.lastUpdateMinute = tt.minute
-        thendo()
+        mydt.lastUpdateMinute = mydt.mydatetime.minute
+        then()
     }
 
     /**
@@ -945,13 +967,14 @@ namespace DateTime {
     //% block="on hour changed from $mydt do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% handlerStatement
+    //% group="state update"
     //% weight=80
-    export function onHourChanged(mydt: dtobj, thendo: () => void) {
-        const tt = timeFor(mydt, cpuTimeInSeconds())
-        if (mydt.lastUpdateHour == tt.hour) return;
+    export function onHourChanged(mydt: dtobj, then: () => void) {
+        if (mydt.lastUpdateHour == mydt.mydatetime.hour) return;
+        
         // New hour
-        mydt.lastUpdateHour = tt.hour
-        thendo()
+        mydt.lastUpdateHour = mydt.mydatetime.hour
+        then()
     }
 
     /**
@@ -961,13 +984,13 @@ namespace DateTime {
     //% block="on day changed from $mydt do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% handlerStatement
+    //% group="state update"
     //% weight=75
-    export function onDayChanged(mydt: dtobj, thendo: () => void) {
-        const tt = timeFor(mydt, cpuTimeInSeconds())
-        if (mydt.lastUpdateDay == tt.day) return;
+    export function onDayChanged(mydt: dtobj, then: () => void) {
+        if (mydt.lastUpdateDay == mydt.mydatetime.day) return;
         // New day
-        mydt.lastUpdateDay = tt.day
-        thendo()
+        mydt.lastUpdateDay = mydt.mydatetime.day
+        then()
     }
 
     // ***************** This was just for debugging / evaluate problems in API
