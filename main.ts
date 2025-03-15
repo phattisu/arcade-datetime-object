@@ -339,7 +339,7 @@ namespace DateTime {
 
         // sSinceStartOfYear and leap are now for "y", not "year".  Don't use "year"! Use "y"
         // Find elapsed days
-        const daysFromStartOfYear = Math.constrain(Math.idiv(sSinceStartOfYear, (24 * 60 * 60)), 1, (isLeapYear(y)) ? 366 : 365)  // +1 offset for 1/1 being day 1 and maximum for 366 if is LeapYear or 365 if not LeapYear
+        const daysFromStartOfYear = Math.constrain(Math.idiv(sSinceStartOfYear, (24 * 60 * 60))+1, 1, (isLeapYear(y)) ? 366 : 365)  // +1 offset for 1/1 being day 1 and maximum for 366 if is LeapYear or 365 if not LeapYear
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
