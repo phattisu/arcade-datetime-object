@@ -42,7 +42,7 @@ namespace DateTime {
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
         public startYear: Year; public cpuTimeAtSetpoint: SecondsCount; public timeToSetpoint: SecondsCount;
-        public lastUpdateMinute: Minute = -255; public lastUpdateHour: Hour = -255; public lastUpdateDay: Day = -255  // Set to invalid values for first update
+        public lastUpdateMinute: Minute = 128; public lastUpdateHour: Hour = 128; public lastUpdateDay: Day = 128  // Set to invalid values for first update
         public TIME_AND_DATE_EVENT = 94; public TIME_AND_DATE_NEWMINUTE = 1; public TIME_AND_DATE_NEWHOUR = 2; public TIME_AND_DATE_NEWDAY = 3
         
         public run() {
@@ -931,9 +931,10 @@ namespace DateTime {
     //% handlerStatement
     //% weight=85
     export function onMinuteChanged(mydt: dtobj, thendo: () => void) {
-        if (mydt.lastUpdateMinute == mydt.mydatetime.minute) return;
+        const tt = timeFor(mydt, cpuTimeInSeconds())
+        if (mydt.lastUpdateMinute == tt.minute) return;
         // New minute
-        mydt.lastUpdateMinute = mydt.mydatetime.minute
+        mydt.lastUpdateMinute = tt.minute
         thendo()
     }
 
@@ -946,9 +947,10 @@ namespace DateTime {
     //% handlerStatement
     //% weight=80
     export function onHourChanged(mydt: dtobj, thendo: () => void) {
-        if (mydt.lastUpdateHour == mydt.mydatetime.hour) return;
+        const tt = timeFor(mydt, cpuTimeInSeconds())
+        if (mydt.lastUpdateHour == tt.hour) return;
         // New hour
-        mydt.lastUpdateHour = mydt.mydatetime.hour
+        mydt.lastUpdateHour = tt.hour
         thendo()
     }
 
@@ -961,9 +963,10 @@ namespace DateTime {
     //% handlerStatement
     //% weight=75
     export function onDayChanged(mydt: dtobj, thendo: () => void) {
-        if (mydt.lastUpdateDay == mydt.mydatetime.day) return;
+        const tt = timeFor(mydt, cpuTimeInSeconds())
+        if (mydt.lastUpdateDay == tt.day) return;
         // New day
-        mydt.lastUpdateDay = mydt.mydatetime.day
+        mydt.lastUpdateDay = tt.day
         thendo()
     }
 
