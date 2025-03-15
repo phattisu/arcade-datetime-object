@@ -53,21 +53,6 @@ namespace DateTime {
                 // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by every 1s with about 65kHz for arcade or etc.
                 const cpuTime = cpuTimeInSeconds()
                 const t = timeFor(this, cpuTime)
-                if (this.lastUpdateMinute != t.minute) {
-                    // New minute
-                    control.raiseEvent(this.TIME_AND_DATE_EVENT, this.TIME_AND_DATE_NEWMINUTE)
-                    this.lastUpdateMinute = t.minute
-                }
-                if (this.lastUpdateHour != t.hour) {
-                    // New hour
-                    control.raiseEvent(this.TIME_AND_DATE_EVENT, this.TIME_AND_DATE_NEWHOUR)
-                    this.lastUpdateHour = t.hour
-                }
-                if (this.lastUpdateDay != t.day) {
-                    // New day
-                    control.raiseEvent(this.TIME_AND_DATE_EVENT, this.TIME_AND_DATE_NEWDAY)
-                    this.lastUpdateDay = t.day
-                }
             })
         }
 
@@ -941,33 +926,45 @@ namespace DateTime {
      * Called when minutes change
      */
     //% blockid=datetime_minuteupdate
-    //% block="minute changed from $mydt" advanced=true
+    //% block="on minute changed from $mydt do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% handlerStatement
     //% weight=85
-    export function onMinuteChanged(mydt: dtobj, handler: () => void) {
-        control.onEvent(mydt.TIME_AND_DATE_EVENT, mydt.TIME_AND_DATE_NEWMINUTE, handler)
+    export function onMinuteChanged(mydt: dtobj, thendo: () => void) {
+        if (mydt.lastUpdateMinute == mydt.mydatetime.minute) return;
+        // New minute
+        mydt.lastUpdateMinute = mydt.mydatetime.minute
+        thendo()
     }
 
     /**
      * Called when hours change
      */
     //% blockid=datetime_hourupdate
-    //% block="hour changed from $mydt" advanced=true
+    //% block="on hour changed from $mydt do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% handlerStatement
     //% weight=80
-    export function onHourChanged(mydt: dtobj, handler: () => void) {
-        control.onEvent(mydt.TIME_AND_DATE_EVENT, mydt.TIME_AND_DATE_NEWHOUR, handler)
+    export function onHourChanged(mydt: dtobj, thendo: () => void) {
+        if (mydt.lastUpdateHour == mydt.mydatetime.hour) return;
+        // New hour
+        mydt.lastUpdateHour = mydt.mydatetime.hour
+        thendo()
     }
 
     /**
      * Called when days change
      */
     //% blockid=datetime_dayupdate
-    //% block="day changed from $mydt" advanced=true
+    //% block="on day changed from $mydt do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% handlerStatement
     //% weight=75
-    export function onDayChanged(mydt: dtobj, handler: () => void) {
-        control.onEvent(mydt.TIME_AND_DATE_EVENT, mydt.TIME_AND_DATE_NEWDAY, handler)
+    export function onDayChanged(mydt: dtobj, thendo: () => void) {
+        if (mydt.lastUpdateDay == mydt.mydatetime.day) return;
+        // New day
+        mydt.lastUpdateDay = mydt.mydatetime.day
+        thendo()
     }
 
     // ***************** This was just for debugging / evaluate problems in API
