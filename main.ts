@@ -19,7 +19,7 @@ namespace DateTime {
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2022
-    export function datevalue(month: number, day: number, year: number) { return new dates(((month-1)%12)+1, ((day-1)%31)+1, year) }
+    export function datev(month: number, day: number, year: number) { return new dates(((month-1)%12)+1, ((day-1)%31)+1, year) }
 
     export class times { constructor(public hour: number, public minute: number, public second: number) { } }
 
@@ -29,7 +29,7 @@ namespace DateTime {
     //% hour.min=0 hour.max=23 hour.defl=13
     //% min.min=0 min.max=59 min.defl=30
     //% sec.min=0 sec.max=59 sec.defl=0
-    export function time24value(hour: number, min: number, sec: number) { return new times(hour % 24, min % 60, sec % 60) }
+    export function time24v(hour: number, min: number, sec: number) { return new times(hour % 24, min % 60, sec % 60) }
 
     //% blockHidden=true
     //% blockId=datetime_halftimeshadow
@@ -37,7 +37,7 @@ namespace DateTime {
     //% hour.min=1 hour.max=12 hour.defl=11
     //% min.min=0 min.max=59 min.defl=30
     //% sec.min=0 sec.max=59 sec.defl=0
-    export function time12value(hour: number, min: number, sec: number) { return new times(((hour - 1) % 12) + 1, min % 60, sec % 60) }
+    export function time12v(hour: number, min: number, sec: number) { return new times(((hour - 1) % 12) + 1, min % 60, sec % 60) }
 
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
@@ -179,6 +179,7 @@ namespace DateTime {
 
     type SecondsCount = uint32 // Seconds since start of start year
     type Weekday = uint8 // Weekday code. 0=Sunday, 1=Monday, etc.
+    type Weekyear = uint8 // 0-51 (1-52) / Weekyear format
 
     interface DateTime {
         month: Month   // 1-12 Month of year
@@ -283,7 +284,7 @@ namespace DateTime {
     function secondsSoFarForYear(m: Month, d: Day, y: Year, hh: Hour, mm: Minute, ss: Second): SecondsCount {
         // ((((Complete Days * 24hrs/ day)+complete hours)*60min/ hr)+complete minutes)* 60s/ min + complete seconds
         // Yay Horner's Rule!:
-        return (((dateToDayOfYear(datevalue(m, d, y)) - 1) * 24 + hh) * 60 + mm) * 60 + ss
+        return (((dateToDayOfYear(datev(m, d, y)) - 1) * 24 + hh) * 60 + mm) * 60 + ss
     }
 
     function dateSinceFor(dateSince: SecondsCount, offsetSince: SecondsCount = 0, offsetYear: Year = 0): Date {
@@ -310,8 +311,8 @@ namespace DateTime {
         // Convert days to dd/ mm
         const ddmm = dayOfYearToMonthAndDay(daysFromStartOfYear, y) // current year, y, not start year
 
-        const weekv = dateToDayOfWeek(datevalue(ddmm.month, ddmm.day, y))
-        const daysincev = dateToDaySince(datevalue(ddmm.month, ddmm.day, y))
+        const weekv = dateToDayOfWeek(datev(ddmm.month, ddmm.day, y))
+        const daysincev = dateToDaySince(datev(ddmm.month, ddmm.day, y))
 
         return { month: ddmm.month, day: ddmm.day, year: y, dayOfYear: daysFromStartOfYear , dayOfWeek: weekv, daySince: daysincev}
     }
@@ -349,8 +350,8 @@ namespace DateTime {
         // Convert days to dd/ mm
         const ddmm = dayOfYearToMonthAndDay(daysFromStartOfYear, y) // current year, y, not start year
 
-        const weekv = dateToDayOfWeek(datevalue(ddmm.month, ddmm.day, y))
-        const daysincev = dateToDaySince(datevalue(ddmm.month, ddmm.day, y))
+        const weekv = dateToDayOfWeek(datev(ddmm.month, ddmm.day, y))
+        const daysincev = dateToDaySince(datev(ddmm.month, ddmm.day, y))
 
         mydt.mydatetime = { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear, dayOfWeek: weekv, daySince: daysincev }
         return mydt.mydatetime
@@ -390,8 +391,8 @@ namespace DateTime {
         // Convert days to dd/ mm
         const ddmm = dayOfYearToMonthAndDay(daysFromStartOfYear, y) // current year, y, not start year
 
-        const weekv = dateToDayOfWeek(datevalue(ddmm.month, ddmm.day, y))
-        const daysincev = dateToDaySince(datevalue(ddmm.month, ddmm.day, y))
+        const weekv = dateToDayOfWeek(datev(ddmm.month, ddmm.day, y))
+        const daysincev = dateToDaySince(datev(ddmm.month, ddmm.day, y))
 
         return { month: ddmm.month, day: ddmm.day, year: y, hour: hoursFromStartOfDay, minute: minutesFromStartOfHour, second: secondsSinceStartOfMinute, dayOfYear: daysFromStartOfYear, dayOfWeek: weekv, daySince: daysincev }
     }
@@ -528,7 +529,7 @@ namespace DateTime {
         } else if (ampm == MornNight.PM && hour != 12) {   // PMs other than 12 get shifted after 12:00 hours
             hour = hour + 12;
         }
-        set24HourTime(mydt, time24value(hour, minute, second));
+        set24HourTime(mydt, time24v(hour, minute, second));
     }
 
     /**
@@ -565,7 +566,7 @@ namespace DateTime {
         umonth = Math.constrain(umonth, 1, 12)
         let daySince = 0
         for (let yidx = 1; yidx < uyear; yidx++) daySince += (isLeapYear(yidx)) ? 366 : 365;
-        daySince += dateToDayOfYear(datevalue(umonth, uday, uyear))
+        daySince += dateToDayOfYear(datev(umonth, uday, uyear))
         return daySince
     }
 
@@ -586,7 +587,7 @@ namespace DateTime {
         umonth = Math.constrain(umonth, 1, 12)
         let timeSince = 0
         for (let yidx = 1; yidx < uyear; yidx++) timeSince += ((isLeapYear(yidx)) ? 366 : 365) * (24 * 60 * 60);
-        timeSince += dateToDayOfYear(datevalue(umonth, uday, uyear)) * (24 * 60 * 60)
+        timeSince += dateToDayOfYear(datev(umonth, uday, uyear)) * (24 * 60 * 60)
         timeSince += (uhour % 24) * (60 * 60), timeSince += (uminute % 60) * (60), timeSince += (usecond % 60)
         return timeSince
     }
@@ -596,18 +597,36 @@ namespace DateTime {
      * @param 0=>Monday, 1=>Tuesday, etc.
      */
     //% blockid=datetime_date2dayweek
-    //% block="day of week for $dates" advanced=true
-    //% dates.shadow=datetime_dateshadow
+    //% block="day of week for $datei" advanced=true
+    //% datei.shadow=datetime_dateshadow
     //% group="calculate"
     //% weight=40
-    export function dateToDayOfWeek(dates: dates): Weekday {
-        let month = dates.month, day = dates.day, year = dates.year
-        let doy = dateToDayOfYear(datevalue(month, day, year))
+    export function dateToDayOfWeek(datei: dates): Weekday {
+        let yv = datei.year
+        let doy = dateToDayOfYear(datei)
         // Gauss's Algorithm for Jan 1: https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week
         // R(1+5R(A-1,4)+4R(A-1,100)+6R(A-1,400),7)    
-        let jan1 = ((1 + 5 * ((year - 1) % 4) + 4 * ((year - 1) % 100) + 6 * ((year - 1) % 400)) % 7)
+        let jan1 = ((1 + (5 * ((yv - 1) % 4)) + (4 * ((yv - 1) % 100)) + (6 * ((yv - 1) % 400))) % 7)
         jan1 += 6  // Shift range:  Gauss used 0=Sunday, we'll use 0=Monday
         return ((doy - 1) + jan1) % 7
+    }
+    
+    /**
+     * Get the Week of year
+     * @param weekofyear are minimum for 0 and maximum for 51
+     */
+    //% blockId=datetime_date2weekofyear
+    //% block="week of year for $datei" advanced=true
+    //% datei.shadow=datetime_dateshadow
+    //% group="calculate"
+    //% weight=35
+    export function dateToWeekOfYear(datei: dates): Weekyear {
+        let yv = datei.year
+        let doy = dateToDayOfYear(datei)
+        let jan1 = ((1 + (5 * ((yv - 1) % 4)) + (4 * ((yv - 1) % 100))) + ((6 * ((yv - 1) % 400))) % 7)
+        jan1 += 6
+        let dwoy = ((doy - 1) + jan1)
+        return Math.floor(dwoy / 7) % 52
     }
 
     /**
@@ -633,8 +652,8 @@ namespace DateTime {
 
     /**
      * calculate my age from my birthdate in current date
+     * @param mydt the datetimeobject for current datetime
      * @param idate the birthdate value
-     * @param odate the currentdate value
      */
     //% blockId=datetime_mydatetoage
     //% block=" $mydt get age from birthdate by $idate in current date" advanced=true
@@ -643,14 +662,14 @@ namespace DateTime {
     //% group="calculate"
     //% weight=14
     export function myDateToAge(mydt: dtobj, idate: dates) {
-        let dateii = new dates(idate.month, idate.day, idate.year), DsinceMin = dateToDaySince(datevalue(dateii.month, dateii.day, dateii.year)), DateMin = dateSinceFor(DsinceMin), LeapMin = isLeapYear(DateMin.year)
-        let dateoo = new dates(mydt.mydatetime.month, mydt.mydatetime.day, mydt.mydatetime.year), DsinceMax = dateToDaySince(datevalue(dateoo.month, dateoo.day, dateoo.year)), DateMax = dateSinceFor(DsinceMax), LeapMax = isLeapYear(DateMax.year)
-        let curY = DateMin.year, curDsince = dateToDaySince(datevalue(dateoo.month, dateoo.day, dateii.year))
+        let dateii = new dates(idate.month, idate.day, idate.year), DsinceMin = dateToDaySince(datev(dateii.month, dateii.day, dateii.year)), DateMin = dateSinceFor(DsinceMin), LeapMin = isLeapYear(DateMin.year)
+        let dateoo = new dates(mydt.mydatetime.month, mydt.mydatetime.day, mydt.mydatetime.year), DsinceMax = dateToDaySince(datev(dateoo.month, dateoo.day, dateoo.year)), DateMax = dateSinceFor(DsinceMax), LeapMax = isLeapYear(DateMax.year)
+        let curY = DateMin.year, curDsince = dateToDaySince(datev(dateoo.month, dateoo.day, dateii.year))
         let curDate = dateSinceFor(curDsince), curLeap = isLeapYear(curDate.year)
         let uDayYear = 0, ageCount = 0
         while (curY <= DateMax.year) {
             if (curDate.year >= DateMax.year) {
-                uDayYear = dateToDayOfYear(datevalue(curDate.month, curDate.day, curDate.year))
+                uDayYear = dateToDayOfYear(datev(curDate.month, curDate.day, curDate.year))
                 if (LeapMin) {
                     if (curDate.month > 2 && !curLeap) uDayYear++
                     if (uDayYear > DateMin.dayOfYear) ageCount++
@@ -680,14 +699,14 @@ namespace DateTime {
     //% weight=15
     export function dateAsTableList(idate: dates, startweek: OffsetWeek): number[] {
         let dateJ = new dates(idate.month, idate.day, idate.year)
-        let dateCountI = dateToDaySince(datevalue(dateJ.month, dateJ.day, dateJ.year))
+        let dateCountI = dateToDaySince(dateJ)
         let dateI = dateSinceFor(dateCountI)
-        let dateWeek = dateToDayOfWeek(datevalue(dateI.month, dateI.day, dateI.year))
+        let dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
         while (dateI.month == dateJ.month || dateWeek != startweek) {
             if (dateSinceFor(dateCountI - 1).month != dateJ.month && dateWeek == startweek) break;
             dateCountI--
             dateI = dateSinceFor(dateCountI)
-            dateWeek = dateToDayOfWeek(datevalue(dateI.month, dateI.day, dateI.year))
+            dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
         }
         let tableDate: number[] = []
         let tableCol = 7, tableRow = 6
@@ -713,7 +732,7 @@ namespace DateTime {
     //% group="image output"
     //% weight=15
     export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
-        let calennum: number[] = dateAsTableList(datevalue(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
+        let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
         let calenstr: string[] = []
         for (let i = 0;i < 7;i++) {
             calenstr.push(weekName[1][(i+startweek)%7].substr(0,2).toUpperCase())
@@ -856,7 +875,7 @@ namespace DateTime {
     export function nameWeek(mydt: dtobj, format: WeekNameFormat): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(mydt, cpuTime)
-        const w = dateToDayOfWeek(datevalue(t.month, t.day, t.year))
+        const w = dateToDayOfWeek(datev(t.month, t.day, t.year))
         const dtIdx = weekName[0].indexOf(w.toString())
         const dtName = weekName[1][dtIdx]
         switch (format) {
@@ -887,7 +906,7 @@ namespace DateTime {
     export function date(mydt: dtobj, format: DateFormat, ytype: YearFormat = 0): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(mydt, cpuTime)
-        const w = dateToDayOfWeek(datevalue(t.month, t.day, t.year))
+        const w = dateToDayOfWeek(datev(t.month, t.day, t.year))
         const dtIdx = [monthName[0].indexOf(t.month.toString()), weekName[0].indexOf(w.toString())]
         const dtName = [monthName[1][dtIdx[0]], weekName[1][dtIdx[1]]]
         switch (format) {
