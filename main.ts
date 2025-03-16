@@ -41,9 +41,8 @@ namespace DateTime {
 
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
-        public startYear: Year; public cpuTimeAtSetpoint: SecondsCount; public timeToSetpoint: SecondsCount;
+        public startYear: Year = 1; public cpuTimeAtSetpoint: SecondsCount = 0; public timeToSetpoint: SecondsCount = 0;
         public lastUpdateMinute: Minute = 128; public lastUpdateHour: Hour = 128; public lastUpdateDay: Day = 128  // Set to invalid values for first update
-        public TIME_AND_DATE_EVENT = 94; public TIME_AND_DATE_NEWMINUTE = 1; public TIME_AND_DATE_NEWHOUR = 2; public TIME_AND_DATE_NEWDAY = 3
         
         public run() {
             /* 
@@ -51,16 +50,12 @@ namespace DateTime {
             */
             game.onUpdateInterval(1000, function () {
                 // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by every 1s with about 65kHz for arcade or etc.
-                const cpuTime = cpuTimeInSeconds()
-                const t = timeFor(this, cpuTime)
+                const cpuTime = cpuTimeInSeconds(), t = timeFor(this, cpuTime)
                 this.mydatetime = t
             })
         }
 
-        constructor() {
-            this.startYear = 0; this.cpuTimeAtSetpoint = 0; this.timeToSetpoint = 0
-            this.run()
-        }
+        constructor() { this.run() }
     }
 
     // ********* Enumerations for parameter types ************************
