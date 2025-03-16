@@ -13,31 +13,34 @@ namespace DateTime {
 
     export class dates { constructor(public month: number, public day: number, public year: number) { } }
 
-    //% blockHidden=true
     //% blockId=datetime_dateshadow
-    //% block="month $month / day $day / year $year"
+    //% block="month $month / day $day / year $year" advanced=true
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
     //% year.min=2020 year.max=2050 year.defl=2022
+    //% group="class one"
+    //% weight=19
     export function datev(month: number, day: number, year: number) { return new dates(((month-1)%12)+1, ((day-1)%31)+1, year) }
 
     export class times { constructor(public hour: number, public minute: number, public second: number) { } }
 
-    //% blockHidden=true
     //% blockId=datetime_timeshadow
-    //% block="$hour : $min . $sec"
+    //% block="$hour : $min . $sec" advanced=true
     //% hour.min=0 hour.max=23 hour.defl=13
     //% min.min=0 min.max=59 min.defl=30
     //% sec.min=0 sec.max=59 sec.defl=0
+    //% group="class one"
+    //% weight=16
     export function time24v(hour: number, min: number, sec: number) { return new times(hour % 24, min % 60, sec % 60) }
 
-    //% blockHidden=true
     //% blockId=datetime_halftimeshadow
-    //% block="$hour : $min . $sec"
+    //% block="$hour : $min . $sec" advanced=true
     //% hour.min=1 hour.max=12 hour.defl=11
     //% min.min=0 min.max=59 min.defl=30
     //% sec.min=0 sec.max=59 sec.defl=0
-    export function time12v(hour: number, min: number, sec: number) { return new times(((hour - 1) % 12) + 1, min % 60, sec % 60) }
+    //% group="class one"
+    //% weight=13
+    export function time12v(hour: number, min: number, sec: number) { return new times(((hour + 11) % 12) + 1, min % 60, sec % 60) }
 
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
@@ -428,7 +431,7 @@ namespace DateTime {
     /**
      * get create a new datetime
      */
-    //% block=datetime_newdatetime
+    //% blockId=datetime_newdatetime
     //% block="create new datetime"
     //% inlineInputMode=inline
     //% blockSetVariable="myDateTime"
@@ -436,12 +439,33 @@ namespace DateTime {
     //% weight=140
     export function newDatetime() { return new dtobj() }
 
+    //% blockId=datetime_mydt_getdateclass
+    //% block="get $mydt as date class month/day/year" advanced=true
+    //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="class one"
+    //% weight=9
+    export function mydtAsDateC(mydt: dtobj) { return new dates(((mydt.mydatetime.month-1)%12)+1, ((mydt.mydatetime.day-1)%31)+1, mydt.mydatetime.year)}
+
+    //% blockId=datetime_mydt_gettime24class
+    //% block="get $mydt as 24time class hour/minute/second" advanced=true
+    //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="class one"
+    //% weight=6
+    export function mydtAsT24c(mydt: dtobj) { return new times(mydt.mydatetime.hour % 24, mydt.mydatetime.minute % 60, mydt.mydatetime.second % 60)}
+
+    //% blockId=datetime_mydt_gettime24class
+    //% block="get $mydt as 12time class hour/minute/second" advanced=true
+    //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% group="class one"
+    //% weight=3
+    export function mydtAsT12c(mydt: dtobj) { return new times(((mydt.mydatetime.hour+11)%12)+1, mydt.mydatetime.minute % 60, mydt.mydatetime.second % 60)}
+
     /**
      * get the datetime value from kind data
      * @param dropdown of datetime list
      * @param datetime kind to get
      */
-    //% block=datetime_getvaluefromkinddata
+    //% blockId=datetime_getvaluefromkinddata
     //% block=" $mydt get datetime value as $dt"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% inlineInputMode=inline
