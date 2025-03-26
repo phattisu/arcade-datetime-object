@@ -551,7 +551,7 @@ namespace DateTime {
         if (ampm == MornNight.AM && hour == 12) {  // 12am -> 0 hundred hours
             hour = 0;
         } else if (ampm == MornNight.PM && hour != 12) {   // PMs other than 12 get shifted after 12:00 hours
-            hour = hour + 12;
+            hour + 12;
         }
         set24HourTime(mydt, time24v(hour, minute, second));
     }
