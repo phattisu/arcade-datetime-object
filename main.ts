@@ -45,7 +45,7 @@ namespace DateTime {
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
         public startYear: Year = 1; public cpuTimeAtSetpoint: SecondsCount = 0; public timeToSetpoint: SecondsCount = 0;
-        public lastUpdateMinute: Minute = 128; public lastUpdate: DateTime = {month: NaN, day: NaN, year: NaN, hour: NaN, minute: NaN, second: NaN, dayOfYear: NaN, dayOfWeek: NaN, daySince: NaN}
+        public inProcess: {[id: string]: boolean} = {}; public lastUpdate: DateTime = {month: NaN, day: NaN, year: NaN, hour: NaN, minute: NaN, second: NaN, dayOfYear: NaN, dayOfWeek: NaN, daySince: NaN}
         
         public run() {
             /* 
@@ -743,6 +743,8 @@ namespace DateTime {
     //% group="image output"
     //% weight=15
     export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
+        if (myDate.inProcess["calendar"]) return image.create(16, 16)
+        myDate.inProcess["calendar"] = true
         let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
         let calenstr: string[] = []
         for (let i = 0;i < 7;i++) {
@@ -776,6 +778,7 @@ namespace DateTime {
                 outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
             }
         }
+        myDate.inProcess["calendar"] = false
         return outputimg
     }
 
