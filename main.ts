@@ -762,6 +762,7 @@ namespace DateTime {
         outputimg.fill(bgcol)
         outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
         outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
+        outputimg.fillRect(0, theight, (gtcol * twidth) + 1, 1, bgcol)
         for (let i = 0;i < calenstr.length;i++) {
             const gcol = i % 7, grow = Math.floor(i / 7), txt = calenstr[i]
             if (grow > 0) {
@@ -1023,7 +1024,7 @@ namespace DateTime {
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% group="state update"
     //% weight=83
-    export function ifMinuteChanged(mydt: dtobj, updtype: ValueUpdate) {
+    export function isChanged(mydt: dtobj, updtype: ValueUpdate) {
         switch (updtype) {
             case 0:
                 if (mydt.lastUpdate.second == mydt.mydatetime.second) break;
