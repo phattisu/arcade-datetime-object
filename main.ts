@@ -1016,7 +1016,7 @@ namespace DateTime {
      * @param mydt the datetime object
      */
     //% blockId=datetime_ifchanged
-    //% block="$mydt minute is changed" advanced=true
+    //% block="$mydt $updtype is changed" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% group="state update"
     //% weight=83
