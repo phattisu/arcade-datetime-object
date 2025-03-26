@@ -716,7 +716,7 @@ namespace DateTime {
         while (dateI.month == idate.month || dateWeek != startweek) {
             if (dateSinceFor(dateCountI - 1).month != idate.month && dateWeek == startweek) break;
             dateCountI--
-            if (dateCountI <= 0) return []
+            if (dateCountI < 0) return []
             dateI = dateSinceFor(dateCountI)
             dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
         }
