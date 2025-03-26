@@ -686,29 +686,9 @@ namespace DateTime {
     //% group="calculate"
     //% weight=14
     export function myDateToAge(mydt: dtobj, idate: dates) {
-        let dateii = new dates(idate.month, idate.day, idate.year), DsinceMin = dateToDaySince(datev(dateii.month, dateii.day, dateii.year)), DateMin = dateSinceFor(DsinceMin), LeapMin = isLeapYear(DateMin.year)
-        let dateoo = new dates(mydt.mydatetime.month, mydt.mydatetime.day, mydt.mydatetime.year), DsinceMax = dateToDaySince(datev(dateoo.month, dateoo.day, dateoo.year)), DateMax = dateSinceFor(DsinceMax), LeapMax = isLeapYear(DateMax.year)
-        let curY = DateMin.year, curDsince = dateToDaySince(datev(dateoo.month, dateoo.day, dateii.year))
-        let curDate = dateSinceFor(curDsince), curLeap = isLeapYear(curDate.year)
-        let uDayYear = 0, ageCount = 0
-        while (curY <= DateMax.year) {
-            if (curDate.year >= DateMax.year) {
-                uDayYear = dateToDayOfYear(datev(curDate.month, curDate.day, curDate.year))
-                if (LeapMin) {
-                    if (curDate.month > 2 && !curLeap) uDayYear++
-                    if (uDayYear > DateMin.dayOfYear) ageCount++
-                } else {
-                    if (curDate.month > 2 && curLeap) uDayYear--
-                    if (uDayYear > DateMin.dayOfYear) ageCount++
-                }
-            } else if (curDate.year < DateMax.year) {
-                ageCount++
-            }
-            curY++, curLeap = isLeapYear(curY)
-            curDsince += (curLeap) ? 366 : 365, curDate = dateSinceFor(curDsince, DsinceMin, DateMin.year)
-        }
-        ageCount = Math.max(ageCount - 2, 0)
-        return ageCount
+        let age = mydt.mydatetime.year - idate.year
+        if (mydt.mydatetime.month < idate.month ||(mydt.mydatetime.month == idate.month && mydt.mydatetime.day < idate.day)) age--
+        return age
     }
 
     /**
