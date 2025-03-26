@@ -45,7 +45,7 @@ namespace DateTime {
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
         public startYear: Year = 1; public cpuTimeAtSetpoint: SecondsCount = 0; public timeToSetpoint: SecondsCount = 0;
-        public lastUpdateMinute: Minute = 128; public lastUpdateHour: Hour = 128; public lastUpdateDay: Day = 128  // Set to invalid values for first update
+        public lastUpdateMinute: Minute = 128; public lastUpdate: DateTime = {month: NaN, day: NaN, year: NaN, hour: NaN, minute: NaN, second: NaN, dayOfYear: NaN, dayOfWeek: NaN, daySince: NaN}
         
         public run() {
             /* 
@@ -73,11 +73,19 @@ namespace DateTime {
         ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     ]
 
-    export enum YearFormat {
-        //% block="national year"
-        NY = 0,
-        //% block="buddhist year"
-        BHY = 543,
+    export enum ValueUpdate {
+        //% block="Second"
+        Second = 0,
+        //% block="Minute"
+        Minute = 1,
+        //% block="Hour"
+        Hour = 2,
+        //% block="Day"
+        Day = 3,
+        //% block="Month"
+        Month = 4,
+        //% block="Year"
+        Year = 5,
     }
 
     export enum DropDatetime {
@@ -338,15 +346,15 @@ namespace DateTime {
 
         // sSinceStartOfYear and leap are now for "y", not "year".  Don't use "year"! Use "y"
         // Find elapsed days
-        const daysFromStartOfYear = Math.constrain(Math.idiv(sSinceStartOfYear, (24 * 60 * 60))+1, 1, (isLeapYear(y)) ? 366 : 365)  // +1 offset for 1/1 being day 1 and maximum for 366 if is LeapYear or 365 if not LeapYear
+        const daysFromStartOfYear = Math.constrain(Math.floor(sSinceStartOfYear / (24 * 60 * 60))+1, 1, (isLeapYear(y)) ? 366 : 365)  // +1 offset for 1/1 being day 1 and maximum for 366 if is LeapYear or 365 if not LeapYear
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
-        const hoursFromStartOfDay = Math.idiv(secondsSinceStartOfDay, (60 * 60))
+        const hoursFromStartOfDay = Math.floor(secondsSinceStartOfDay / (60 * 60))
         const secondsSinceStartOfHour = secondsSinceStartOfDay % (60 * 60)
 
         // Find elapsed minutes
-        const minutesFromStartOfHour = Math.idiv(secondsSinceStartOfHour, (60))
+        const minutesFromStartOfHour = Math.floor(secondsSinceStartOfHour / (60))
         // Find elapsed seconds
         const secondsSinceStartOfMinute = secondsSinceStartOfHour % (60)
 
@@ -379,15 +387,15 @@ namespace DateTime {
 
         // sSinceStartOfYear and leap are now for "y", not "year".  Don't use "year"! Use "y"
         // Find elapsed days
-        const daysFromStartOfYear = Math.idiv(sSinceStartOfYear, (24 * 60 * 60)) + 1  // +1 offset for 1/1 being day 1
+        const daysFromStartOfYear = Math.constrain(Math.floor(sSinceStartOfYear / (24 * 60 * 60)) + 1, 1, isLeapYear(y) ? 366 : 365) // +1 offset for 1/1 being day 1
         const secondsSinceStartOfDay = sSinceStartOfYear % (24 * 60 * 60)
 
         // Find elapsed hours
-        const hoursFromStartOfDay = Math.idiv(secondsSinceStartOfDay, (60 * 60))
+        const hoursFromStartOfDay = Math.floor(secondsSinceStartOfDay / (60 * 60))
         const secondsSinceStartOfHour = secondsSinceStartOfDay % (60 * 60)
 
         // Find elapsed minutes
-        const minutesFromStartOfHour = Math.idiv(secondsSinceStartOfHour, (60))
+        const minutesFromStartOfHour = Math.floor(secondsSinceStartOfHour / (60))
         // Find elapsed seconds
         const secondsSinceStartOfMinute = secondsSinceStartOfHour % (60)
 
@@ -402,7 +410,7 @@ namespace DateTime {
 
     //% shim=datetime::cpuTimeInSeconds
     function cpuTimeInSeconds(): uint32 {
-        return Math.idiv(game.runtime(), 1000)
+        return Math.floor(game.runtime() / 1000)
     }
 
     // ********* Misc. Utility Functions for formatting ************************
@@ -421,8 +429,9 @@ namespace DateTime {
     }
 
     // Full year: yyyy-mm-dd
-    function fullYear(t: DateTime, y: YearFormat = 0): string {
-        return leftZeroPadTo(t.year + y, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2)
+    function fullYear(t: DateTime, yf: boolean = false): string {
+        const yv = (yf)?543:0
+        return leftZeroPadTo(t.year + yv, 4) + "-" + leftZeroPadTo(t.month, 2) + "-" + leftZeroPadTo(t.day, 2)
     }
 
 
@@ -702,21 +711,19 @@ namespace DateTime {
     //% group="calculate"
     //% weight=15
     export function dateAsTableList(idate: dates, startweek: OffsetWeek): number[] {
-        let dateJ = new dates(idate.month, idate.day, idate.year)
-        let dateCountI = dateToDaySince(dateJ)
-        let dateI = dateSinceFor(dateCountI)
+        let dateCountI = dateToDaySince(idate), dateI = dateSinceFor(dateCountI)
         let dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
-        while (dateI.month == dateJ.month || dateWeek != startweek) {
-            if (dateSinceFor(dateCountI - 1).month != dateJ.month && dateWeek == startweek) break;
+        while (dateI.month == idate.month || dateWeek != startweek) {
+            if (dateSinceFor(dateCountI - 1).month != idate.month && dateWeek == startweek) break;
             dateCountI--
             dateI = dateSinceFor(dateCountI)
             dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
         }
         let tableDate: number[] = []
         let tableCol = 7, tableRow = 6
-        for (let iin = 0; iin < tableCol * tableRow; iin++) {
-            dateI = dateSinceFor(dateCountI + iin)
-            tableDate.push((dateJ.month == dateI.month || (dateI.dayOfYear == 1)) ? dateI.day : -dateI.day)
+        for (let tableidx = 0; tableidx < tableCol * tableRow; tableidx++) {
+            dateI = dateSinceFor(dateCountI + tableidx)
+            tableDate.push((idate.month == dateI.month) ? dateI.day : -dateI.day)
         }
         return tableDate
     }
@@ -903,11 +910,12 @@ namespace DateTime {
      * @param ytype the year type to use
      */
     //% blockid=datetime_date2format
-    //% block=" $mydt date as $format for year as $ytype"
+    //% block=" $mydt date as $format|| for buddhist year $ytype"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% yf.shadow=toggleYesNo
     //% group="text output"
     //% weight=60
-    export function date(mydt: dtobj, format: DateFormat, ytype: YearFormat = 0): string {
+    export function date(mydt: dtobj, format: DateFormat, yf: boolean = false): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(mydt, cpuTime)
         const w = dateToDayOfWeek(datev(t.month, t.day, t.year))
@@ -924,11 +932,11 @@ namespace DateTime {
                 return t.month + "/" + t.day
                 break
             case DateFormat.MDY:
-                t.year += ytype
+                t.year += (yf)?543:0
                 return t.month + "/" + t.day + "/" + t.year
                 break
             case DateFormat.YYYY_MM_DD:
-                return fullYear(t, ytype)
+                return fullYear(t, yf)
                 break
 
         }
@@ -939,14 +947,15 @@ namespace DateTime {
      * Current date and time in a timestamp format (YYYY-MM-DD HH:MM.SS).  
      */
     //% blockid=datetime_dateandtime 
-    //% block=" $mydt date and time stamp for year in $ytype"
+    //% block=" $mydt date and time stamp|| for buddhist year $yf"
     //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% yf.shadow=toggleYesNo
     //% group="text output"
     //% weight=50
-    export function dateTime(mydt: dtobj, ytype: YearFormat = 0): string {
+    export function dateTime(mydt: dtobj, yf: boolean = false): string {
         const cpuTime = cpuTimeInSeconds()
         const t = timeFor(mydt , cpuTime)
-        return fullYear(t, ytype) + " " + fullTime(t)
+        return fullYear(t, yf) + " " + fullTime(t)
     }
 
     /**
@@ -962,53 +971,83 @@ namespace DateTime {
 
 
     /**
-     * Called when minutes change
+     * Called when get changed
+     * @param mydt the datetime object
+     * @param type of value update
      */
-    //% blockid=datetime_minuteupdate
-    //% block="on minute changed from $mydt do" advanced=true
+    //% blockid=datetime_onchanged
+    //% block=" $mydt on $updtype changed do" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% handlerStatement
     //% group="state update"
     //% weight=85
-    export function onMinuteChanged(mydt: dtobj, then: () => void) {
-        if (mydt.lastUpdateMinute == mydt.mydatetime.minute) return;
-        
-        // New minute
-        mydt.lastUpdateMinute = mydt.mydatetime.minute
-        then()
+    export function onChanged(mydt: dtobj, updtype: ValueUpdate, thendo: () => void) {
+        switch (updtype) {
+            case 0:
+                if (mydt.lastUpdate.second == mydt.mydatetime.second) break;
+                // New second
+                mydt.lastUpdate.second = mydt.mydatetime.second; thendo()
+            break; case 1:
+                if (mydt.lastUpdate.minute == mydt.mydatetime.minute) break;
+                // New minute
+                mydt.lastUpdate.minute = mydt.mydatetime.minute; thendo()
+            break; case 2:
+                if (mydt.lastUpdate.hour == mydt.mydatetime.hour) break;
+                // New hour
+                mydt.lastUpdate.hour = mydt.mydatetime.hour; thendo()
+            break; case 3:
+                if (mydt.lastUpdate.day == mydt.mydatetime.day) break;
+                // New day
+                mydt.lastUpdate.day = mydt.mydatetime.day; thendo()
+            break; case 4:
+                if (mydt.lastUpdate.month == mydt.mydatetime.month) break;
+                // New month
+                mydt.lastUpdate.month = mydt.mydatetime.month; thendo()
+            break; case 5:
+                if (mydt.lastUpdate.year == mydt.mydatetime.year) break;
+                // New year
+                mydt.lastUpdate.year = mydt.mydatetime.year; thendo()
+            break;
+        }
     }
 
     /**
-     * Called when hours change
+     * get true when changed
+     * @param mydt the datetime object
      */
-    //% blockid=datetime_hourupdate
-    //% block="on hour changed from $mydt do" advanced=true
+    //% blockId=datetime_ifchanged
+    //% block="$mydt minute is changed" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
-    //% handlerStatement
     //% group="state update"
-    //% weight=80
-    export function onHourChanged(mydt: dtobj, then: () => void) {
-        if (mydt.lastUpdateHour == mydt.mydatetime.hour) return;
-        
-        // New hour
-        mydt.lastUpdateHour = mydt.mydatetime.hour
-        then()
-    }
-
-    /**
-     * Called when days change
-     */
-    //% blockid=datetime_dayupdate
-    //% block="on day changed from $mydt do" advanced=true
-    //% mydt.shadow=variables_get mydt.defl=myDateTime
-    //% handlerStatement
-    //% group="state update"
-    //% weight=75
-    export function onDayChanged(mydt: dtobj, then: () => void) {
-        if (mydt.lastUpdateDay == mydt.mydatetime.day) return;
-        // New day
-        mydt.lastUpdateDay = mydt.mydatetime.day
-        then()
+    //% weight=83
+    export function ifMinuteChanged(mydt: dtobj, updtype: ValueUpdate) {
+        switch (updtype) {
+            case 0:
+                if (mydt.lastUpdate.second == mydt.mydatetime.second) break;
+                // New second
+                mydt.lastUpdate.second = mydt.mydatetime.second; return true
+            case 1:
+                if (mydt.lastUpdate.minute == mydt.mydatetime.minute) break;
+                // New minute
+                mydt.lastUpdate.minute = mydt.mydatetime.minute; return true
+            case 2:
+                if (mydt.lastUpdate.hour == mydt.mydatetime.hour) break;
+                // New hour
+                mydt.lastUpdate.hour = mydt.mydatetime.hour; return true
+            case 3:
+                if (mydt.lastUpdate.day == mydt.mydatetime.day) break;
+                // New day
+                mydt.lastUpdate.day = mydt.mydatetime.day; return true
+            case 4:
+                if (mydt.lastUpdate.month == mydt.mydatetime.month) break;
+                // New month
+                mydt.lastUpdate.month = mydt.mydatetime.month; return true
+            case 5:
+                if (mydt.lastUpdate.year == mydt.mydatetime.year) break;
+                // New year
+                mydt.lastUpdate.year = mydt.mydatetime.year; return true
+        }
+        return false
     }
 
     // ***************** This was just for debugging / evaluate problems in API
