@@ -761,13 +761,12 @@ namespace DateTime {
             }
             calenstr.push(val.toString())
         }
-        let twidth = 15, theight = 10
-        let gtcol = 7, gtrow = 7
+        let twidth = 15, theight = 10, gtcol = 7, gtrow = 7
         let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
         outputimg.fill(bgcol)
-        outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
-        outputimg.fillRect(0, theight - 1, (gtcol * twidth) + 1, 1, bgcol)
         outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
+        outputimg.fillRect(0, theight - 1, (gtcol * twidth) + 1, 1, bgcol)
+        outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
         for (let i = 0;i < calenstr.length;i++) {
             const gcol = i % 7, grow = Math.floor(i / 7), txt = calenstr[i]
             if (grow > 0) {
@@ -781,7 +780,7 @@ namespace DateTime {
                     }
                 }
             } else {
-                outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)) - 1, bgcol)
+                outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
             }
         }
         myDate.inProcess["calendar"] = false
