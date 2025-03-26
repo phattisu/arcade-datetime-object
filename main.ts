@@ -747,7 +747,10 @@ namespace DateTime {
         if (myDate.inProcess["calendar"]) return image.create(16, 16)
         myDate.inProcess["calendar"] = true
         let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
-        if (calennum.length <= 0) return image.create(16, 16)
+        if (calennum.length <= 0){
+            myDate.inProcess["calendar"] = false
+            return image.create(16, 16)
+        }
         let calenstr: string[] = []
         for (let i = 0;i < 7;i++) {
             calenstr.push(weekName[1][(i+startweek)%7].substr(0,2).toUpperCase())
