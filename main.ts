@@ -716,6 +716,7 @@ namespace DateTime {
         while (dateI.month == idate.month || dateWeek != startweek) {
             if (dateSinceFor(dateCountI - 1).month != idate.month && dateWeek == startweek) break;
             dateCountI--
+            if (dateCountI <= 0) return []
             dateI = dateSinceFor(dateCountI)
             dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
         }
@@ -746,6 +747,7 @@ namespace DateTime {
         if (myDate.inProcess["calendar"]) return image.create(16, 16)
         myDate.inProcess["calendar"] = true
         let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
+        if (calennum.length <= 0) return image.create(16, 16)
         let calenstr: string[] = []
         for (let i = 0;i < 7;i++) {
             calenstr.push(weekName[1][(i+startweek)%7].substr(0,2).toUpperCase())
@@ -762,7 +764,7 @@ namespace DateTime {
         outputimg.fill(bgcol)
         outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
         outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
-        outputimg.fillRect(0, theight, (gtcol * twidth) + 1, 1, bgcol)
+        outputimg.fillRect(0, theight - 1, (gtcol * twidth) + 1, 1, bgcol)
         for (let i = 0;i < calenstr.length;i++) {
             const gcol = i % 7, grow = Math.floor(i / 7), txt = calenstr[i]
             if (grow > 0) {
