@@ -761,7 +761,7 @@ namespace DateTime {
             }
             calenstr.push(val.toString())
         }
-        let twidth = 15, theight = 10, gtcol = 7, gtrow = 7
+        let twidth = 15, theight = 9, gtcol = 7, gtrow = 7
         let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
         outputimg.fill(bgcol)
         outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
