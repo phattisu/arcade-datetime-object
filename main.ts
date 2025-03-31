@@ -739,14 +739,14 @@ namespace DateTime {
      * @param max row grid
      */
     //% blockid=datetime_datetable
-    //% block="calendar as image $myDate in $startweek fgcolor $fgcol bgcolor $bgcol and max row $rowv"
+    //% block="calendar as image $myDate in $startweek|| maxrow $rowv fgcolor $fgcol bgcolor $bgcol"
     //% myDate.shadow=variables_get myDate.defl=myDateTime
     //% fgcol.shadow=colorindexpicker
     //% bgcol.shadow=colorindexpicker
     //% rowv.min=1 rowv.max=3 rowv.defl=2
     //% group="image output"
     //% weight=15
-    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15, rowv: number = 0) {
+    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, rowv: number = 0, fgcol: number = 1, bgcol: number = 15) {
         if (myDate.inProcess["calendar"]) return image.create(16, 16)
         myDate.inProcess["calendar"] = true
         let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek, rowv)
