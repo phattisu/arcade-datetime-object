@@ -706,14 +706,15 @@ namespace DateTime {
      * @param startweek the offset week for calendar
      */
     //% blockid=datetime_datetable
-    //% block="raw calendar table as $idate in $startweek" advanced=true
+    //% block="raw calendar table as $idate in $startweek|| and max row $rowv" advanced=true
     //% idate.shadow=datetime_dateshadow
+    //% rowv.min=1 rowv.max=3 rowv.defl=2
     //% group="calculate"
     //% weight=15
-    export function dateAsTableList(idate: dates, startweek: OffsetWeek): number[] {
+    export function dateAsTableList(idate: dates, startweek: OffsetWeek, rowv: number = 0): number[] {
         let dateCountI = dateToDaySince(idate), dateI = dateSinceFor(dateCountI)
         let dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
-        while (dateI.month == idate.month || dateWeek != startweek) {
+        while ((rowv > 0 && dateWeek != startweek)||(rowv <= 0 &&(dateI.month == idate.month || dateWeek != startweek))) {
             if (dateSinceFor(dateCountI - 1).month != idate.month && dateWeek == startweek) break;
             dateCountI--
             if (dateCountI < 0) return []
@@ -721,7 +722,7 @@ namespace DateTime {
             dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
         }
         let tableDate: number[] = []
-        let tableCol = 7, tableRow = 6
+        let tableCol = 7, tableRow = (rowv > 0)?rowv:6
         for (let tableidx = 0; tableidx < tableCol * tableRow; tableidx++) {
             dateI = dateSinceFor(dateCountI + tableidx)
             tableDate.push((idate.month == dateI.month) ? dateI.day : -dateI.day)
@@ -735,18 +736,20 @@ namespace DateTime {
      * @param startweek the offset week for calendar
      * @param the forground color
      * @param the background color
+     * @param max row grid
      */
     //% blockid=datetime_datetable
-    //% block="calendar as image $myDate in $startweek|| fgcolor $fgcol bgcolor $bgcol"
+    //% block="calendar as image $myDate in $startweek fgcolor $fgcol bgcolor $bgcol and max row $rowv"
     //% myDate.shadow=variables_get myDate.defl=myDateTime
     //% fgcol.shadow=colorindexpicker
     //% bgcol.shadow=colorindexpicker
+    //% rowv.min=1 rowv.max=3 rowv.defl=2
     //% group="image output"
     //% weight=15
-    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15) {
+    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, fgcol: number = 1, bgcol: number = 15, rowv: number = 0) {
         if (myDate.inProcess["calendar"]) return image.create(16, 16)
         myDate.inProcess["calendar"] = true
-        let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek)
+        let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek, rowv)
         if (calennum.length <= 0){
             myDate.inProcess["calendar"] = false
             return image.create(16, 16)
@@ -761,9 +764,12 @@ namespace DateTime {
             }
             calenstr.push(val.toString())
         }
-        let twidth = 15, theight = 9, gtcol = 7, gtrow = 7
+        let twidth = 15, theight = 9, gtcol = 7, gtrow = (rowv > 0)?rowv:7
         let outputimg: Image = image.create((gtcol*twidth)+1, (gtrow*theight)+1)
         outputimg.fill(bgcol)
+        outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
+        for (let i = 1;i < gtcol;i++) outputimg.fillRect((i * twidth), 0, 1, outputimg.height, fgcol)
+        for (let i = 1;i < gtrow;i++) outputimg.fillRect(0, (i * theight), outputimg.width, 1, fgcol)
         outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
         outputimg.fillRect(0, theight - 1, (gtcol * twidth) + 1, 1, bgcol)
         outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
@@ -771,7 +777,6 @@ namespace DateTime {
             const gcol = i % 7, grow = Math.floor(i / 7), txt = calenstr[i]
             if (grow > 0) {
                 const cnum = calennum[Math.max(0,i-7)]
-                outputimg.drawRect(gcol*twidth,grow*theight,twidth+1,theight+1,fgcol)
                 outputimg.print(txt, 1+(gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), 1 + (grow * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
                 if (cnum > 0) {
                     if (myDate.mydatetime.day == cnum) {
