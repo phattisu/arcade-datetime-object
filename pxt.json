@@ -1,6 +1,6 @@
 {
     "name": "datetime-object",
-    "version": "5.1.1",
+    "version": "5.2.0",
     "description": "datetime clock extension for makecode arcade",
     "dependencies": {
         "device": "*"
