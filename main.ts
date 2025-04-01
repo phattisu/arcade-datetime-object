@@ -708,7 +708,7 @@ namespace DateTime {
      * @param camera calendar mode
      */
     //% blockid=datetime_datetable
-    //% block="raw calendar table as $idate in $startweek|| and max row $rowv and camera mode $cammode advanced=true
+    //% block="raw calendar table as $idate in $startweek|| and max row $rowv and camera mode $cammode" advanced=true
     //% idate.shadow=datetime_dateshadow
     //% rowv.min=1 rowv.max=3 rowv.defl=2
     //% cammode.shadow=toggleYesNo
@@ -745,7 +745,7 @@ namespace DateTime {
      * @param the background color
      */
     //% blockid=datetime_datetable
-    //% block="calendar as image $myDate in $startweek|| maxrow $rowv fgcolor $fgcol bgcolor $bgcol"
+    //% block="calendar as image $myDate in $startweek|| maxrow $rowv camera mode $cammode fgcolor $fgcol bgcolor $bgcol"
     //% myDate.shadow=variables_get myDate.defl=myDateTime
     //% fgcol.shadow=colorindexpicker
     //% bgcol.shadow=colorindexpicker
