@@ -704,22 +704,27 @@ namespace DateTime {
      * create calendar table from date
      * @param idate the date to create raw calendar
      * @param startweek the offset week for calendar
+     * @param max row grid
+     * @param camera calendar mode
      */
     //% blockid=datetime_datetable
-    //% block="raw calendar table as $idate in $startweek|| and max row $rowv" advanced=true
+    //% block="raw calendar table as $idate in $startweek|| and max row $rowv and camera mode $cammode" advanced=true
     //% idate.shadow=datetime_dateshadow
     //% rowv.min=1 rowv.max=3 rowv.defl=2
+    //% cammode.shadow=toggleYesNo
     //% group="calculate"
     //% weight=15
-    export function dateAsTableList(idate: dates, startweek: OffsetWeek, rowv: number = 0): number[] {
+    export function dateAsTableList(idate: dates, startweek: OffsetWeek, rowv: number = 0, cammode: boolean = false): number[] {
         let dateCountI = dateToDaySince(idate), dateI = dateSinceFor(dateCountI)
         let dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
-        while ((rowv > 0 && dateWeek != startweek)||(rowv <= 0 &&(dateI.month == idate.month || dateWeek != startweek))) {
+        let camrow = (rowv > 2 && cammode)?Math.floor(rowv / 2):0
+        while ((cammode && camrow > 0)||(!cammode &&(rowv > 0 && dateWeek != startweek)||(rowv <= 0 &&(dateI.month == idate.month || dateWeek != startweek)))) {
             if (dateSinceFor(dateCountI - 1).month != idate.month && dateWeek == startweek) break;
             dateCountI--
             if (dateCountI < 0) return []
             dateI = dateSinceFor(dateCountI)
             dateWeek = dateToDayOfWeek(datev(dateI.month, dateI.day, dateI.year))
+            if (cammode&&(camrow > 0 && dateWeek == startweek)) camrow--
         }
         let tableDate: number[] = []
         let tableCol = 7, tableRow = (rowv > 0)?rowv:6
@@ -734,9 +739,10 @@ namespace DateTime {
      * create calendar table from date
      * @param myDate the current date
      * @param startweek the offset week for calendar
+     * @param max row grid
+     * @param camera calendar mode
      * @param the forground color
      * @param the background color
-     * @param max row grid
      */
     //% blockid=datetime_datetable
     //% block="calendar as image $myDate in $startweek|| maxrow $rowv fgcolor $fgcol bgcolor $bgcol"
@@ -744,12 +750,13 @@ namespace DateTime {
     //% fgcol.shadow=colorindexpicker
     //% bgcol.shadow=colorindexpicker
     //% rowv.min=1 rowv.max=3 rowv.defl=2
+    //% cammode.shadow=toggleYesNo
     //% group="image output"
     //% weight=15
-    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, rowv: number = 0, fgcol: number = 1, bgcol: number = 15) {
+    export function calendarImage(myDate: dtobj, startweek: OffsetWeek, rowv: number = 0, cammode: boolean = false, fgcol: number = 1, bgcol: number = 15) {
         if (myDate.inProcess["calendar"]) return image.create(16, 16)
         myDate.inProcess["calendar"] = true
-        let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek, rowv)
+        let calennum: number[] = dateAsTableList(datev(myDate.mydatetime.month, myDate.mydatetime.day, myDate.mydatetime.year), startweek, rowv, cammode)
         if (calennum.length <= 0){
             myDate.inProcess["calendar"] = false
             return image.create(16, 16)
