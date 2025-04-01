@@ -708,7 +708,7 @@ namespace DateTime {
      * @param camera calendar mode
      */
     //% blockid=datetime_datetable
-    //% block="raw calendar table as $idate in $startweek|| and max row $rowv and camera mode $cammode" advanced=true
+    //% block="raw calendar table as $idate in $startweek|| and max row $rowv and camera mode $cammode advanced=true
     //% idate.shadow=datetime_dateshadow
     //% rowv.min=1 rowv.max=3 rowv.defl=2
     //% cammode.shadow=toggleYesNo
