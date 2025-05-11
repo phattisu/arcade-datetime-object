@@ -342,28 +342,30 @@ namespace timeanddate {
         }
         let twidth = 15, theight = 9, gtcol = 7, gtrow = (rowv > 0) ? rowv + 1 : 7
         let outputimg: Image = image.create((gtcol * twidth) + 1, (gtrow * theight) + 1)
-        outputimg.fill(bgcol)
-        outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
-        for (let k = 1; k < gtcol; k++) outputimg.fillRect((k * twidth), 0, 1, outputimg.height, fgcol)
-        for (let l = 1; l < gtrow; l++) outputimg.fillRect(0, (l * theight), outputimg.width, 1, fgcol)
-        outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
-        outputimg.fillRect(0, theight - 1, (gtcol * twidth) + 1, 1, bgcol)
-        outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
-        for (let m = 0; m < calenstr.length; m++) {
-            const gcol = m % 7, grow = Math.floor(m / 7), txt = calenstr[m]
-            if (grow > 0) {
-                const cnum = calennum[Math.max(0, m - 7)]
-                outputimg.print(txt, 1 + (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), 1 + (grow * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
-                if (cnum > 0) {
-                    if (myDate.mydatetime.day == cnum) {
-                        outputimg.fillRect(gcol * twidth, grow * theight, twidth + 1, theight + 1, fgcol)
-                        outputimg.print(txt, 1 + (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), 1 + (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+        control.runInParallel(function() {
+            outputimg.fill(bgcol)
+            outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
+            for (let k = 1; k < gtcol; k++) outputimg.fillRect((k * twidth), 0, 1, outputimg.height, fgcol)
+            for (let l = 1; l < gtrow; l++) outputimg.fillRect(0, (l * theight), outputimg.width, 1, fgcol)
+            outputimg.fillRect(0, 0, (gtcol * twidth) + 1, theight + 1, fgcol)
+            outputimg.fillRect(0, theight - 1, (gtcol * twidth) + 1, 1, bgcol)
+            outputimg.drawRect(0, 0, (gtcol * twidth) + 1, (gtrow * theight) + 1, fgcol)
+            for (let m = 0; m < calenstr.length; m++) {
+                const gcol = m % 7, grow = Math.floor(m / 7), txt = calenstr[m]
+                if (grow > 0) {
+                    const cnum = calennum[Math.max(0, m - 7)]
+                    outputimg.print(txt, 1 + (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), 1 + (grow * theight) + Math.floor((theight / 2) - (8 / 2)), fgcol)
+                    if (cnum > 0) {
+                        if (myDate.mydatetime.day == cnum) {
+                            outputimg.fillRect(gcol * twidth, grow * theight, twidth + 1, theight + 1, fgcol)
+                            outputimg.print(txt, 1 + (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), 1 + (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
+                        }
                     }
+                } else {
+                    outputimg.print(txt, 1 + (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
                 }
-            } else {
-                outputimg.print(txt, 1 + (gcol * twidth) + Math.floor((twidth / 2) - ((txt.length * 6) / 2)), (grow * theight) + Math.floor((theight / 2) - (8 / 2)), bgcol)
             }
-        }
+        })
         myDate.inProcess["calendar"] = false
         return outputimg
     }
