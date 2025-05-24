@@ -573,33 +573,7 @@ namespace TimeAndDate {
     //% group="state update"
     //% weight=85
     export function onChanged(mydt: dtobj, updtype: ValueUpdate, thendo: () => void) {
-        switch (updtype) {
-            case 0:
-                if (mydt.lastUpdate.second == mydt.mydatetime.second) break;
-                // New second
-                mydt.lastUpdate.second = mydt.mydatetime.second; thendo()
-                break; case 1:
-                if (mydt.lastUpdate.minute == mydt.mydatetime.minute) break;
-                // New minute
-                mydt.lastUpdate.minute = mydt.mydatetime.minute; thendo()
-                break; case 2:
-                if (mydt.lastUpdate.hour == mydt.mydatetime.hour) break;
-                // New hour
-                mydt.lastUpdate.hour = mydt.mydatetime.hour; thendo()
-                break; case 3:
-                if (mydt.lastUpdate.day == mydt.mydatetime.day) break;
-                // New day
-                mydt.lastUpdate.day = mydt.mydatetime.day; thendo()
-                break; case 4:
-                if (mydt.lastUpdate.month == mydt.mydatetime.month) break;
-                // New month
-                mydt.lastUpdate.month = mydt.mydatetime.month; thendo()
-                break; case 5:
-                if (mydt.lastUpdate.year == mydt.mydatetime.year) break;
-                // New year
-                mydt.lastUpdate.year = mydt.mydatetime.year; thendo()
-                break;
-        }
+        if (isChanged(mydt, updtype)) thendo();
     }
 
     /**
@@ -639,6 +613,22 @@ namespace TimeAndDate {
                 mydt.lastUpdate.year = mydt.mydatetime.year; return true
         }
         return false
+    }
+
+    /**
+     * get run switch between start and stop
+     * @param mydt the datetime object
+     * @param get running if get run
+     */
+    //% blockId=timeanddate_runswicth
+    //% block="get $mydt running $running" advanced=true
+    //% mydt.shadow=variables_get mydt.defl=myDateTime
+    //% running.shadow=toggleYesNo
+    //% group="state update"
+    //% weight=82
+    export function runSwitch(mydt: dtobj, running: boolean) {
+        if (running) mydt.stop();
+        else mydt.run();
     }
 
     // ***************** mydt was just for debugging / evaluate problems in API
