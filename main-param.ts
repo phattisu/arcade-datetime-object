@@ -1,6 +1,6 @@
 
 
-namespace timeanddate {
+namespace TimeAndDate {
 
     // ********* Exposed blocks ************************
 
