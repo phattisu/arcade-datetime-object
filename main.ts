@@ -7,9 +7,9 @@
  *
  * @cradit Bill Siever
  */
-//% block="Date and Time"
+//% block="Time and Date"
 //% color="#AA278D"  icon="\uf017"
-namespace timeanddate {
+namespace TimeAndDate {
 
     export class dates { constructor(public month: number, public day: number, public year: number) { } }
 
