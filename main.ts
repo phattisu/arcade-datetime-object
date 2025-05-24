@@ -13,7 +13,7 @@ namespace TimeAndDate {
 
     export class dates { constructor(public month: number, public day: number, public year: number) { } }
 
-    //% blockId=datetime_dateshadow
+    //% blockId=timeanddate_dateshadow
     //% block="month $month / day $day / year $year" advanced=true
     //% month.min=1 month.max=12 month.defl=1
     //% day.min=1 day.max=31 day.defl=20
@@ -24,7 +24,7 @@ namespace TimeAndDate {
 
     export class times { constructor(public hour: number, public minute: number, public second: number) { } }
 
-    //% blockId=datetime_timeshadow
+    //% blockId=timeanddate_timeshadow
     //% block="$hour : $min . $sec" advanced=true
     //% hour.min=0 hour.max=23 hour.defl=13
     //% min.min=0 min.max=59 min.defl=30
@@ -33,7 +33,7 @@ namespace TimeAndDate {
     //% weight=16
     export function time24v(hour: number, min: number, sec: number) { return new times(hour % 24, min % 60, sec % 60) }
 
-    //% blockId=datetime_halftimeshadow
+    //% blockId=timeanddate_halftimeshadow
     //% block="$hour : $min . $sec" advanced=true
     //% hour.min=1 hour.max=12 hour.defl=11
     //% min.min=0 min.max=59 min.defl=30
@@ -44,7 +44,7 @@ namespace TimeAndDate {
 
     export class dtobj {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
-        public startYear: Year = 1; public cpuTimeAtSetpoint: SecondsCount = 0; public timeToSetpoint: SecondsCount = 0;
+        public startYear: Year = 1; public cpuTimeAtSetpoint: SecondsCount = dateAndTimeToTimeSince(datev(1, 1, 1), time24v(0, 0, 0)); public timeToSetpoint: SecondsCount = dateAndTimeToTimeSince(datev(1, 1, 1), time24v(0, 0, 0));
         public inProcess: {[id: string]: boolean} = {}; public lastUpdate: DateTime = {month: NaN, day: NaN, year: NaN, hour: NaN, minute: NaN, second: NaN, dayOfYear: NaN, dayOfWeek: NaN, daySince: NaN}
         protected runVal: any;
 
@@ -59,11 +59,9 @@ namespace TimeAndDate {
             }, 1000)
         }
 
-        public stop() {
-            clearInterval(this.runVal)
-        }
+        public stop() { clearInterval(this.runVal) }
 
-        constructor() { this.run() }
+        constructor(run: boolean = true) { if (run) this.run(); }
     }
 
     // ********* Enumerations for parameter types ************************
@@ -444,12 +442,13 @@ namespace TimeAndDate {
      * get create a new datetime
      */
     //% blockId=timeanddate_newdatetime
-    //% block="create new datetime"
+    //% block="create new datetime|| as time running? $run"
+    //% run.shadow=toggleYesNo
     //% inlineInputMode=inline
     //% blockSetVariable="myDateTime"
     //% group="create datetime"
     //% weight=140
-    export function newDatetime() { return new dtobj() }
+    export function newDatetime(run: boolean = true) { return new dtobj(run) }
 
     //% blockId=timeanddate_mydt_getdateclass
     //% block="get $mydt as date class month/day/year" advanced=true
@@ -1057,7 +1056,7 @@ namespace TimeAndDate {
      * @param get running if get run
      */
     //% blockId=timeanddate_runswicth
-    //% block="get $mydt running $running" advanced=true
+    //% block=" $mydt set time running by $running" advanced=true
     //% mydt.shadow=variables_get mydt.defl=myDateTime
     //% running.shadow=toggleYesNo
     //% group="state update"
