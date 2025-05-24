@@ -9,8 +9,7 @@
         "main.blocks",
         "main.ts",
         "README.md",
-        "assets.json",
-        "main-param.ts"
+        "assets.json"
     ],
     "testFiles": [
         "test.ts"
