@@ -46,16 +46,21 @@ namespace timeanddate {
         public mydatetime: DateTime = { month: 1, day: 1, year: 1, hour: 0, minute: 0, second: 0, dayOfYear: 1, dayOfWeek: 0, daySince: 1}
         public startYear: Year = 1; public cpuTimeAtSetpoint: SecondsCount = 0; public timeToSetpoint: SecondsCount = 0;
         public inProcess: {[id: string]: boolean} = {}; public lastUpdate: DateTime = {month: NaN, day: NaN, year: NaN, hour: NaN, minute: NaN, second: NaN, dayOfYear: NaN, dayOfWeek: NaN, daySince: NaN}
-        
+        protected runVal: any;
+
         public run() {
             /* 
             this ensures that "time" is checked periodically and event handlers are called.  
             */
-            game.onUpdateInterval(1000, function () {
+            this.runVal = setInterval(function () {
                 // Only run about every 2 s;  Micro:bit uses a ticker with a 32kHz period, so the count should increase by every 1s with about 65kHz for arcade or etc.
                 const cpuTime = cpuTimeInSeconds(), t = timeFor(this, cpuTime)
                 this.mydatetime = t
-            })
+            }, 1000)
+        }
+
+        public stop() {
+            clearInterval(this.runVal)
         }
 
         constructor() { this.run() }
