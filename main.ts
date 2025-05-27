@@ -59,7 +59,10 @@ namespace TimeAndDate {
             }, 1000)
         }
 
-        public stop() { clearInterval(this.runVal) }
+        public stop() { 
+            this.runVal = clearInterval(this.runVal)
+            this.runVal = null
+        }
 
         constructor(run: boolean = true) { if (run) this.run(); }
     }
